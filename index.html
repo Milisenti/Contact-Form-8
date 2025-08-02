@@ -1,0 +1,110 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contact Us</title>
+  <script src="https://clearout.io/jswidget/aabe61fc709b84bcba182e39d5884cea" async></script>
+  <script src="https://www.google.com/recaptcha/api.js?render=6LeFhZcrAAAAALEX9tNW3tyVjNen1cfiW-LLMq8L"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #ffffff;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 60px auto;
+      background: #ffffff;
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+    h2 {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 5px;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      margin-top: 20px;
+      background-color: #ea080c;
+      color: white;
+      padding: 14px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 16px;
+    }
+    button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Contact Us</h2>
+    <form id="contact-form">
+      <label for="name">Name</label>
+      <input type="text" id="name" name="name" required />
+
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required />
+
+      <label for="phone">Phone</label>
+      <input type="tel" id="phone" name="phone" />
+
+      <label for="message">Message</label>
+      <textarea id="message" name="message" rows="5" required></textarea>
+
+      <input type="hidden" id="recaptcha-token" name="recaptcha-token" />
+
+      <button type="submit" id="submitBtn">Send Message</button>
+    </form>
+  </div>
+
+  <script>
+    grecaptcha.ready(function() {
+      grecaptcha.execute('6LeFhZcrAAAAALEX9tNW3tyVjNen1cfiW-LLMq8L', {action: 'submit'}).then(function(token) {
+        document.getElementById('recaptcha-token').value = token;
+      });
+    });
+
+    document.getElementById("contact-form").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const email = document.getElementById("email").value;
+
+      fetch("https://api.clearout.io/v2/email_verify/instant", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer aabe61fc709b84bcba182e39d5884cea"
+        },
+        body: JSON.stringify({ email: email })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.data && data.data.result === "valid") {
+          alert("Message sent! (Form demo only)");
+          // тут ты можешь вставить отправку на почту, если подключишь обработчик
+        } else {
+          alert("Invalid email address. Please correct it.");
+        }
+      });
+    });
+  </script>
+</body>
+</html>
